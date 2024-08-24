@@ -1,47 +1,93 @@
-import PRODUCTOS.Bebidas;
-import PRODUCTOS.Envasados;
-import PRODUCTOS.Limpieza;
-import PRODUCTOS.Productos;
+import PRODUCTOS.*;
 
-import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
-
-import static PRODUCTOS.Limpieza.Aplicacion.*;
+import java.util.Map;
+import java.util.Scanner;
 
 public class TestTienda {
+    private static Tienda tienda = new Tienda("Tienda de Ejemplo", 1000, 5000.00);
     public static void main(String[] args) {
-        List<Productos> productos = new ArrayList<>();
-        Bebidas bebida1 = new Bebidas("AC001", "Coca Cola x 3l", 3500, 24,true, true, "27/08/2024",0 );
-        Bebidas bebida2 = new Bebidas("AC002", "Cerveza x 500ml", 1200, 34, true, true, "17/10/2024", 5 );
-        Bebidas bebida3 = new Bebidas("AC003", "Speed x 500ml", 900, 20, false, true,"05/09/2024", 2.5);
-        Bebidas bebida4 = new Bebidas("AC004", "Vino", 875, 10, false, false, "27/08/2024", 1.5);
 
-        Envasados envasado1 = new Envasados("AB001", "Lata de Tomate", 900, 40, false, true, "27/08/2028", "LATA", 183 );
-        Envasados envasado2 = new Envasados("AB002", "Arroz x 1kg", 1000, 20, true, true, "27/08/2028", "PAQUETE", 130 );
-        Envasados envasado3 = new Envasados("AB003", "Leche x 1l", 850, 5, false, true, "02/02/2028", "SACHET", 42 );
-        Envasados envasado4 = new Envasados("AB004", "Masitas Saladas", 500, 87, false, true, "14/12/2025", "CAJA",  69);
+        Scanner scanner = new Scanner(System.in);
+        int opcion = -1;
 
-        Limpieza limpieza2 = new Limpieza("AZ001", "Lavandina x 900ml", 960, 55, true, true);
-        Limpieza limpieza3 = new Limpieza("AZ002", "Esponga", 230, 83, true, false);
-        Limpieza limpieza4 = new Limpieza("AZ003", "Jabon", 200, 27, true, true);
-        Limpieza limpieza5 = new Limpieza("AZ004", "Suavizante", 1500, 3, false, false);
+        while (opcion != 3) {
+            System.out.println("==== Menú de Tienda ====");
+            System.out.println("1. Realizar compra");
+            System.out.println("2. Realizar venta");
+            System.out.println("3. Salir");
+            System.out.print("Selecciona una opción: ");
 
-        productos.add(bebida1);
-        productos.add(bebida2);
-        productos.add(bebida3);
-        productos.add(bebida4);
-        productos.add(envasado1);
-        productos.add(envasado2);
-        productos.add(envasado3);
-        productos.add(envasado4);
-        productos.add(limpieza2);
-        productos.add(limpieza3);
-        productos.add(limpieza4);
-        productos.add(limpieza5);
+            try {
+                opcion = scanner.nextInt();
+                scanner.nextLine(); // Consumir el salto de línea
 
+                switch (opcion) {
+                    case 1:
+                        realizarCompra();
+                        break;
+                    case 2:
+                        realizarVenta();
+                        break;
+                    case 3:
+                        System.out.println("Saliendo del programa...");
+                        break;
+                    default:
+                        System.out.println("Opción no válida. Por favor, seleccione una opción entre 1 y 3.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Por favor, ingresa un número entero.");
+                scanner.next();
+            }
+        }
+
+        scanner.close();
+
+        scanner.close();
+    }
+
+    private void inicializarTienda() {
+        Envasados e1 = new Envasados("AB001", "Arroz Integral", 3.50, 100, false, true, 12, "2025-12-31", "Plástico", 350);
+        Envasados e2 = new Envasados("AB002", "Harina de Trigo", 2.75, 50, false, true, 14, "2024-11-15", "Cartón", 250);
+        Envasados e3 =new Envasados("AB003", "Azúcar Blanca", 1.99, 75, true, true, 15, "2025-10-01", "Vidrio", 400);
+        tienda.agregarProductos(Map.of(e1, 45, e2, 60, e3, 40));
+    }
+
+    private static void realizarCompra() {
+        System.out.println();
+        System.out.println("=== Prueba: Realizar Compra ===");
+
+        Bebidas b1 = new Bebidas("AC001", "Vino Tinto", 15.00, 30, true, true, 10, 250, "2026-05-30", 12.0);
+        Bebidas b2 = new Bebidas("AC002", "Cerveza Lager", 4.50, 50, false, true, 8, 150, "2024-09-15", 5.0);
+        Bebidas b3 = new Bebidas("AC003", "Whisky Escocés", 30.00, 20, true, true, 12, 400, "2026-03-10", 40.0);
+
+        Limpieza l1 = new Limpieza("AZ001", "Limpiador Multiusos", 3.50, 100, false, true, 15, Limpieza.Aplicacion.MULTIUSO);
+        Limpieza l2 =new Limpieza("AZ002", "Detergente para Cocina", 2.75, 60, false, true, 12, Limpieza.Aplicacion.COCINA);
+        Limpieza l3 = new Limpieza("AZ003", "Desinfectante de Baño", 4.00, 45, false, true, 18, Limpieza.Aplicacion.BAÑO);
+
+        tienda.realizarCompra(Map.of(b1, 25, b2, 20, b3, 10, l1, 3, l2, 5, l3, 8));
+        System.out.println();
+        verProductos(tienda.getInventario());
+    }
+
+    private static void verProductos(List<Productos> productos) {
+        System.out.println("=== Productos en la tienda ===");
         for (Productos producto : productos) {
             System.out.println(producto);
         }
+        System.out.println();
+        System.out.println();
+    }
+
+    private static void realizarVenta() {
+        System.out.println("=== Prueba: Realizar Venta ===");
+
+        Bebidas b1 = new Bebidas("AC001", "Vino Tinto", 15.00, 30, true, true, 10, 250, "2026-05-30", 12.0);
+        Limpieza l1 = new Limpieza("AZ001", "Limpiador Multiusos", 3.50, 100, false, true, 15, Limpieza.Aplicacion.MULTIUSO);
+        Limpieza l2 =new Limpieza("AZ002", "Detergente para Cocina", 2.75, 60, false, true, 12, Limpieza.Aplicacion.COCINA);
+
+        tienda.realizarVenta(Map.of(b1, 9, l1, 2, l2, 2));
+        verProductos(tienda.getInventario());
     }
 }
-
